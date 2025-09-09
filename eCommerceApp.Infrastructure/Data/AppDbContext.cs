@@ -17,12 +17,15 @@ namespace eCommerceApp.Infrastructure.Data
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Achieve> CheckoutAchieves { get; set; }
+        public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Profesional> Profesionales { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
+            builder.Entity<Cliente>().ToTable("Clientes");
+            builder.Entity<Profesional>().ToTable("Profesionales");
             builder.Entity<PaymentMethod>()
                 .HasData(
                     new PaymentMethod
