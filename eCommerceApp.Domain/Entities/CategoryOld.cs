@@ -2,15 +2,11 @@
 
 namespace eCommerceApp.Domain.Entities
 {
-    public class Category
+    public class CategoryOld
     {
         [Key]
         public Guid Id { get; set; }
-
-        [Required, MaxLength(100)]
         public string? Name { get; set; }
-
-        public ICollection<ProfessionalCategory> ProfessionalCategories { get; set; } = new List<ProfessionalCategory>();
+        public ICollection<Product>? Products { get; set; }
     }
-
 }

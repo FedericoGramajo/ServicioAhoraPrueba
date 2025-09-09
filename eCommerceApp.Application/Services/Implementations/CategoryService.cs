@@ -9,11 +9,11 @@ using eCommerceApp.Domain.Interfaces.CategorySpecifics;
 
 namespace eCommerceApp.Application.Services.Implementations
 {
-    public class CategoryService(IGeneric<Category> categoryInterface, IMapper mapper, ICategory categorySpecifics) : ICategoryService
+    public class CategoryService(IGeneric<CategoryOld> categoryInterface, IMapper mapper, ICategory categorySpecifics) : ICategoryService
     {
         public async Task<ServiceResponse> AddAsync(CreateCategory category)
         {
-            var mappedData = mapper.Map<Category>(category);
+            var mappedData = mapper.Map<CategoryOld>(category);
             int result = await categoryInterface.AddAsync(mappedData);
             return result > 0 ? new ServiceResponse(true, "Category created!") : new ServiceResponse(false, "Category failed to be deleted!");
         }
@@ -47,7 +47,7 @@ namespace eCommerceApp.Application.Services.Implementations
 
         public async Task<ServiceResponse> UpdateAsync(UpdateCategory category)
         {
-            var mappedData = mapper.Map<Category>(category);
+            var mappedData = mapper.Map<CategoryOld>(category);
             int result = await categoryInterface.UpdateAsync(mappedData);
             return result > 0 ? new ServiceResponse(true, "Category updated!") : new ServiceResponse(false, "Category failed to be update!");
         }

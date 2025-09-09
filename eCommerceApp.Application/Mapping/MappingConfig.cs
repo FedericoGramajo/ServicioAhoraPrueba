@@ -13,10 +13,10 @@ namespace eCommerceApp.Application.Mapping
     {
         public MappingConfig()
         {
-            CreateMap<CreateCategory, Category>();
+            CreateMap<CreateCategory, CategoryOld>();
             CreateMap<CreateProduct, Product>();
 
-            CreateMap<Category, GetCategory>();
+            CreateMap<CategoryOld, GetCategory>();
             CreateMap<Product, GetProduct>();
 
             CreateMap<CreateUser, AppUser>();

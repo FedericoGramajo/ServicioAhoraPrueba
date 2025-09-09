@@ -39,7 +39,7 @@ namespace eCommerceApp.Infrastructure.DependencyInjection
             }).UseExceptionProcessor(),
             ServiceLifetime.Scoped);
             services.AddScoped<IGeneric<Product>, GenericRepository<Product>>();
-            services.AddScoped<IGeneric<Category>, GenericRepository<Category>>();
+            services.AddScoped<IGeneric<CategoryOld>, GenericRepository<CategoryOld>>();
             services.AddScoped(typeof(IAppLogger<>), typeof(SerilogLoggerAdapter<>));
             services.AddDefaultIdentity<AppUser>(options =>
             {
