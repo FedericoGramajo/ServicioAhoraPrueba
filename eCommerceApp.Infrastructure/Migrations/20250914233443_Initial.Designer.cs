@@ -12,7 +12,7 @@ using eCommerceApp.Infrastructure.Data;
 namespace eCommerceApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250909212553_Initial")]
+    [Migration("20250914233443_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -54,15 +54,21 @@ namespace eCommerceApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "9e4f49fe-0786-44c6-9061-53d2aa84fab3",
+                            Id = "ADMIN",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "3a9d0c3b-4e59-4b5e-a2b7-45c7d07f91d4",
-                            Name = "User",
-                            NormalizedName = "USER"
+                            Id = "PROFESSIONAL",
+                            Name = "Professional",
+                            NormalizedName = "PROFESSIONAL"
+                        },
+                        new
+                        {
+                            Id = "CUSTUMER",
+                            Name = "Custumer",
+                            NormalizedName = "CUSTUMER"
                         });
                 });
 
@@ -956,11 +962,9 @@ namespace eCommerceApp.Infrastructure.Migrations
                 {
                     b.Navigation("AppUserAddresses");
 
-                    b.Navigation("Customer")
-                        .IsRequired();
+                    b.Navigation("Customer");
 
-                    b.Navigation("Professional")
-                        .IsRequired();
+                    b.Navigation("Professional");
                 });
 
             modelBuilder.Entity("eCommerceApp.Domain.Entities.Rol.Customer", b =>

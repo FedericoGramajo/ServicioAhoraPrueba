@@ -5,8 +5,10 @@ using eCommerceApp.Application.Services.Interfaces.Authentication;
 using eCommerceApp.Application.Services.Interfaces.Logging;
 using eCommerceApp.Application.Validations;
 using eCommerceApp.Domain.Entities.Identity;
+using eCommerceApp.Domain.Entities.Rol;
 using eCommerceApp.Domain.Interfaces.Authentication;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace eCommerceApp.Application.Services.Implementations.Authentication
 {
@@ -18,20 +20,45 @@ namespace eCommerceApp.Application.Services.Implementations.Authentication
     {
         public async Task<ServiceResponse> CreateUser(CreateUser user)
         {
+            bool assignedResult = true;
             var _validatorResult =  await validationService.ValidateAsync(user, createUserValidator);
             if (!_validatorResult.Success) return _validatorResult;
 
             var mappedModel = mapper.Map<AppUser>(user);
             mappedModel.UserName = user.Email;
-            mappedModel.PasswordHash = user.Password;
+            //mappedModel.PasswordHash = user.Password;
 
-            var result = await userManagement.CreateUser(mappedModel);
+            var result = await userManagement.CreateUser(mappedModel, user.Password);
             if (!result)
                 return new ServiceResponse { Message = "Email Address might be already in use or unknown error ocurred"};
             
             var _user = await userManagement.GetUserByEmail(user.Email);
+            if (_user is null) return new ServiceResponse { Message = "User not found after creation" };
+
             var users = await userManagement.GetAllUsers();
-            bool assignedResult = await roleManagement.AddUserToRole(_user!, users!.Count() > 1 ? "User" : "Admin"); 
+            if (users.Count() == 1)
+            {
+                assignedResult = await roleManagement.AddUserToRole(_user!, "Admin"); 
+            }
+            else
+            {
+                switch (user.UserType)
+                {
+                    case UserType.Customer:
+                        var _custumer = await userManagement.AddCustomerAsync(_user.Id);
+                        // agregar validacion
+                        assignedResult = await roleManagement.AddUserToRole(_user, "Custumer");
+                        break;
+                    case UserType.Professional:
+                        await userManagement.AddProfessionalAsync(_user.Id);
+                        assignedResult = await roleManagement.AddUserToRole(_user, "Professional");
+                        break;
+                }
+            }
+            
+
+
+             
 
             if (!assignedResult)
             {

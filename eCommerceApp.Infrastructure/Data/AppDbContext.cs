@@ -54,6 +54,25 @@ namespace eCommerceApp.Infrastructure.Data
                 .HasForeignKey(s => s.ProfessionalId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Customer>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Id).ValueGeneratedNever(); // ← importantísimo
+                e.HasOne(x => x.AppUser)
+                 .WithOne(u => u.Customer)
+                 .HasForeignKey<Customer>(x => x.Id)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Professional>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Id).ValueGeneratedNever(); // ← importantísimo
+                e.HasOne(x => x.AppUser)
+                 .WithOne(u => u.Professional)
+                 .HasForeignKey<Professional>(x => x.Id)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
 
             // --- Herencia table-per-type para Customer y Professional ---
             builder.Entity<Customer>().ToTable("Customers");
@@ -121,15 +140,21 @@ namespace eCommerceApp.Infrastructure.Data
                 .HasData(
                     new IdentityRole
                     {
-                        Id = Guid.Parse("9e4f49fe-0786-44c6-9061-53d2aa84fab3").ToString(),
+                        Id = "ADMIN",
                         Name = "Admin",
                         NormalizedName = "ADMIN"
                     },
                     new IdentityRole
                     {
-                        Id = Guid.Parse("3a9d0c3b-4e59-4b5e-a2b7-45c7d07f91d4").ToString(),
-                        Name = "User",
-                        NormalizedName = "USER"
+                        Id = "PROFESSIONAL",
+                        Name = "Professional",
+                        NormalizedName = "PROFESSIONAL"
+                    },
+                    new IdentityRole
+                    {
+                        Id = "CUSTUMER",
+                        Name = "Custumer",
+                        NormalizedName = "CUSTUMER"
                     }
                 );
         }

@@ -1,4 +1,5 @@
 ﻿using eCommerceApp.Domain.Entities.Identity;
+using eCommerceApp.Domain.Entities.Rol;
 using eCommerceApp.Domain.Interfaces.Authentication;
 using eCommerceApp.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -9,11 +10,11 @@ namespace eCommerceApp.Infrastructure.Repositories.Authentication
 {
     public class UserManagement(IRoleManagement roleManagement, UserManager<AppUser> userManager, AppDbContext context ) : IUserManagement
     {
-        public async Task<bool> CreateUser(AppUser user)
+        public async Task<bool> CreateUser(AppUser user, string PasswordHash)
         {
             AppUser? _user = await GetUserByEmail(user.Email!);
             if (_user != null) return false;
-            return (await userManager.CreateAsync(user!, user!.PasswordHash!)).Succeeded;
+            return (await userManager.CreateAsync(user!, PasswordHash!)).Succeeded;
         }
 
         public async Task<IEnumerable<AppUser>> GetAllUsers() => await context.Users.ToListAsync();
@@ -56,6 +57,19 @@ namespace eCommerceApp.Infrastructure.Repositories.Authentication
         {
             var user = await context.Users.FirstOrDefaultAsync(_ => _.Email == email);
             context.Users.Remove(user!);
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> AddProfessionalAsync(string userId)
+        {
+            context.Professionals.Add(new Professional { Id = userId });
+
+            return await context.SaveChangesAsync();
+        }
+        public async Task<int> AddCustomerAsync(string userId)
+        {
+            context.Customers.Add(new Customer { Id = userId });
+
             return await context.SaveChangesAsync();
         }
     }

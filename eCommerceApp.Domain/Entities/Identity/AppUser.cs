@@ -10,8 +10,8 @@ namespace eCommerceApp.Domain.Entities.Identity
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public Customer Customer { get; set; } = default!;
-        public Professional Professional { get; set; } = default!;
+        public Customer? Customer { get; set; }
+        public Professional? Professional { get; set; }
         public ICollection<AppUserAddress> AppUserAddresses { get; set; } = new List<AppUserAddress>();
     }
 }

@@ -8,7 +8,7 @@ namespace eCommerceApp.Domain.Entities.Rol
     public class Customer
     {
         [Key, ForeignKey(nameof(AppUser))]
-        public string? Id { get; set; }
+        public string? Id { get; set; } = default!;
 
         public AppUser AppUser { get; set; } = default!;
         public ICollection<Service> Services { get; set; } = new List<Service>();
