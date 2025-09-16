@@ -3,6 +3,7 @@ using eCommerceApp.Domain.Entities.Cart;
 using eCommerceApp.Domain.Entities.Identity;
 using eCommerceApp.Domain.Entities.Rol;
 using eCommerceApp.Domain.Entities.ServicioAhora;
+using eCommerceApp.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -158,5 +159,26 @@ namespace eCommerceApp.Infrastructure.Data
                     }
                 );
         }
+        public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
+        {
+            var now = DateTime.Now;
+
+            foreach (var e in ChangeTracker.Entries<IAuditable>())
+            {
+                if (e.State == EntityState.Added)
+                {
+                    e.Entity.CreatedAt = now;
+                    e.Entity.UpdatedAt = now;
+                }
+                else if (e.State == EntityState.Modified)
+                {
+                    e.Property(x => x.CreatedAt).IsModified = false; // nunca tocar CreatedAt
+                    e.Entity.UpdatedAt = now;
+                }
+            }
+
+            return await base.SaveChangesAsync(ct);
+        }
     }
+
 }

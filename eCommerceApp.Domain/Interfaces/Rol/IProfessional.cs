@@ -1,10 +1,4 @@
-﻿using eCommerceApp.Domain.Entities;
-using eCommerceApp.Domain.Entities.Rol;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using eCommerceApp.Domain.Entities.Rol;
 
 namespace eCommerceApp.Domain.Interfaces.Rol
 {

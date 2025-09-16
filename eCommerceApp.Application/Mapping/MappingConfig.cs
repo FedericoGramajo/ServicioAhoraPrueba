@@ -4,10 +4,12 @@ using eCommerceApp.Application.DTOs.Category;
 using eCommerceApp.Application.DTOs.Identity;
 using eCommerceApp.Application.DTOs.Identity.Rol.Professional;
 using eCommerceApp.Application.DTOs.Product;
+using eCommerceApp.Application.DTOs.ServicioAhora.ServOffering;
 using eCommerceApp.Domain.Entities;
 using eCommerceApp.Domain.Entities.Cart;
 using eCommerceApp.Domain.Entities.Identity;
 using eCommerceApp.Domain.Entities.Rol;
+using eCommerceApp.Domain.Entities.ServicioAhora;
 
 namespace eCommerceApp.Application.Mapping
 {
@@ -39,6 +41,27 @@ namespace eCommerceApp.Application.Mapping
            .ForMember(d => d.ServicesCount, opt => opt.MapFrom(s => s.Services.Count))
            .ForMember(d => d.AvgRating, opt => opt.MapFrom(s => s.Ratings.Any() ? s.Ratings.Average(r => r.Score) : 0));
 
+
+            CreateMap<ServiceOffering, GetServiceOffering>()
+          .ForMember(d => d.ProfessionalFullName,
+                     o => o.MapFrom(s => s.Professional.AppUser.FullName));
+
+            // Create -> Entity
+            CreateMap<CreateServiceOffering, ServiceOffering>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.CreatedAt, o => o.Ignore())
+                .ForMember(d => d.UpdatedAt, o => o.Ignore())
+                .ForMember(d => d.Professional, o => o.Ignore()) // la FK alcanza
+                .ForMember(d => d.ServiceDetails, o => o.Ignore());
+
+            // Update -> Entity
+            CreateMap<UpdateServiceOffering, ServiceOffering>()
+                // Si NO querés permitir cambiar el owner, ignorá la FK:
+                .ForMember(d => d.ProfessionalId, o => o.Ignore())
+                .ForMember(d => d.CreatedAt, o => o.Ignore())
+                .ForMember(d => d.UpdatedAt, o => o.Ignore())
+                .ForMember(d => d.Professional, o => o.Ignore())
+                .ForMember(d => d.ServiceDetails, o => o.Ignore());
         }
     }
 }

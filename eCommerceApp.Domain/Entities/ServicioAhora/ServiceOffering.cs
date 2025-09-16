@@ -1,4 +1,5 @@
 ﻿using eCommerceApp.Domain.Entities.Rol;
+using eCommerceApp.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,8 +10,7 @@ using System.Threading.Tasks;
 
 namespace eCommerceApp.Domain.Entities.ServicioAhora
 {
-    // ServiceOffering.cs
-    public class ServiceOffering
+    public class ServiceOffering : IAuditable
     {
         [Key]
         public Guid Id { get; set; }
