@@ -44,7 +44,9 @@ namespace eCommerceApp.Application.Mapping
 
             CreateMap<ServiceOffering, GetServiceOffering>()
           .ForMember(d => d.ProfessionalFullName,
-                     o => o.MapFrom(s => s.Professional.AppUser.FullName));
+                     o => o.MapFrom(s => s.Professional.AppUser.FullName))
+          .ForMember(d => d.CategoryName,
+                    o => o.MapFrom(s => s.Category.Name)); 
 
             // Create -> Entity
             CreateMap<CreateServiceOffering, ServiceOffering>()
@@ -52,6 +54,7 @@ namespace eCommerceApp.Application.Mapping
                 .ForMember(d => d.CreatedAt, o => o.Ignore())
                 .ForMember(d => d.UpdatedAt, o => o.Ignore())
                 .ForMember(d => d.Professional, o => o.Ignore()) // la FK alcanza
+                .ForMember(d => d.Category, o => o.Ignore())
                 .ForMember(d => d.ServiceDetails, o => o.Ignore());
 
             // Update -> Entity
@@ -61,7 +64,9 @@ namespace eCommerceApp.Application.Mapping
                 .ForMember(d => d.CreatedAt, o => o.Ignore())
                 .ForMember(d => d.UpdatedAt, o => o.Ignore())
                 .ForMember(d => d.Professional, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore())
                 .ForMember(d => d.ServiceDetails, o => o.Ignore());
+
         }
     }
 }

@@ -11,6 +11,8 @@ using eCommerceApp.Application.Services.Interfaces.Rol;
 using eCommerceApp.Application.Services.Interfaces.ServcioAhora;
 using eCommerceApp.Application.Validations;
 using eCommerceApp.Application.Validations.Authentication;
+using eCommerceApp.Application.Validations.ServicioAhora;
+using eCommerceApp.Application.Validations.ServicioAhora.ServOffer;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +33,8 @@ namespace eCommerceApp.Application.DependencyInjection
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<IProfessionalService, ProfessionalService>();
             services.AddScoped<IServiceOfferingService, ServiceOfferingService>();
+            services.AddValidatorsFromAssemblyContaining<CreateServiceOfferingValidator>();
+            services.AddValidatorsFromAssemblyContaining<UpdateServiceOfferingValidator>();
             return services;
         }
     }

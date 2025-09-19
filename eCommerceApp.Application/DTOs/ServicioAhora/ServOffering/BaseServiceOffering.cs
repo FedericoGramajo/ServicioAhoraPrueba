@@ -22,6 +22,8 @@ namespace eCommerceApp.Application.DTOs.ServicioAhora.ServOffering
             public int? EstimatedDuration { get; set; }
 
             public bool Status { get; set; } = true;
-        }
+            [Required]
+            public Guid CategoryId { get; set; }
+    }
     
 }

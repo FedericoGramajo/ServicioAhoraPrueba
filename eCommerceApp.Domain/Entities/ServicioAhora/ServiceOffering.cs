@@ -18,6 +18,9 @@ namespace eCommerceApp.Domain.Entities.ServicioAhora
         [Required]
         public string? ProfessionalId { get; set; }
 
+        [Required] 
+        public Guid CategoryId { get; set; }
+
         [Required, MaxLength(150)]
         public string Name { get; set; } = string.Empty;
 
@@ -28,7 +31,6 @@ namespace eCommerceApp.Domain.Entities.ServicioAhora
         public decimal BasePrice { get; set; }
 
         public int? EstimatedDuration { get; set; } 
-
         
         public bool Status { get; set; } = true;
 
@@ -38,6 +40,8 @@ namespace eCommerceApp.Domain.Entities.ServicioAhora
         [ForeignKey(nameof(ProfessionalId))]
         public Professional Professional { get; set; } = default!;
 
+        [ForeignKey(nameof(CategoryId))]
+        public Category Category { get; set; } = default!;
         public ICollection<ServiceDetail> ServiceDetails { get; set; } = new List<ServiceDetail>();
     }
 

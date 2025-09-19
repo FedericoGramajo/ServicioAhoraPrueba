@@ -9,6 +9,7 @@
             public DateTime UpdatedAt { get; set; }
 
             public string ProfessionalFullName { get; set; } = string.Empty;
-        }
+            public string CategoryName { get; set; } = string.Empty;
+    }
     
 }

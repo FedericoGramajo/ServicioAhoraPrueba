@@ -86,13 +86,11 @@ namespace eCommerceApp.Infrastructure.Data
             builder.Entity<ProfessionalGroup>()
                 .HasKey(x => new { x.GroupId, x.ProfessionalId });
 
-            builder.Entity<ProfessionalCategory>()
-                .HasKey(x => new { x.CategoryId, x.ProfessionalId });
 
             // --- Precisión de decimales y otras configuraciones ----------
-            builder.Entity<ServiceOffering>()
-                .Property(x => x.BasePrice)
-                .HasColumnType("decimal(10,2)");
+            //builder.Entity<ServiceOffering>()
+            //    .Property(x => x.BasePrice)
+            //    .HasColumnType("decimal(10,2)");
 
             builder.Entity<ServiceDetail>()
                 .Property(x => x.UnitPrice)
@@ -128,6 +126,40 @@ namespace eCommerceApp.Infrastructure.Data
                  .HasForeignKey(r => r.ProfessionalId)
                  .OnDelete(DeleteBehavior.Restrict); // o SetNull
             });
+            builder.Entity<ServiceOffering>(b =>
+            {
+                b.HasIndex(o => new { o.ProfessionalId, o.CategoryId });
+                
+                b.HasIndex(o => o.CategoryId);
+                
+                b.Property(x => x.BasePrice)
+                .HasColumnType("decimal(10,2)");
+
+                b.Property(o => o.ProfessionalId).IsRequired();
+
+                b.Property(o => o.CategoryId).IsRequired();
+
+
+                b.HasOne(o => o.Professional)
+                 .WithMany(p => p.ServiceOfferings)
+                 .HasForeignKey(o => o.ProfessionalId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne(o => o.Category)
+                 .WithMany() // o .WithMany(c => c.ServiceOfferings) si agregás colección
+                 .HasForeignKey(o => o.CategoryId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                // En ServiceOffering: FK compuesta → ProfessionalCategory
+                b.HasOne<ProfessionalCategory>()     // sin navegación
+                .WithMany()
+                .HasForeignKey(o => new { o.CategoryId, o.ProfessionalId })
+                .HasPrincipalKey(pc => new { pc.CategoryId, pc.ProfessionalId })
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<ProfessionalCategory>()
+                .HasKey(x => new { x.CategoryId, x.ProfessionalId });
 
             builder.Entity<PaymentMethod>()
                 .HasData(
