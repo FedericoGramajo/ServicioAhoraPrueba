@@ -35,6 +35,8 @@ namespace eCommerceApp.Application.DependencyInjection
             services.AddScoped<IServiceOfferingService, ServiceOfferingService>();
             services.AddValidatorsFromAssemblyContaining<CreateServiceOfferingValidator>();
             services.AddValidatorsFromAssemblyContaining<UpdateServiceOfferingValidator>();
+            services.AddScoped<IProfessionalLicenseService, ProfessionalLicenseService>();
+            services.AddScoped<IProfessionalCategoryService, ProfessionalCategoryService>();
             return services;
         }
     }

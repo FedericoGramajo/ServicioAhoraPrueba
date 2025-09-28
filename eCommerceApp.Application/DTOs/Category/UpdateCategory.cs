@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace eCommerceApp.Application.DTOs.Category
 {
-    public class UpdateCategory : BaseCategory
+    public class UpdateCategory : BaseProfessionalCategory
     {
         [Required]
         public Guid Id { get; set; }

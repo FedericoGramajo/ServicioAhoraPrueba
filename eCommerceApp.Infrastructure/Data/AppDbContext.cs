@@ -44,7 +44,7 @@ namespace eCommerceApp.Infrastructure.Data
             // Services → Customer
             builder.Entity<Service>()
                 .HasOne(s => s.Customer)
-                .WithMany() // o .WithMany(c => c.Services) si tenés colección
+                .WithMany() // o .WithMany(c => c.Services)
                 .HasForeignKey(s => s.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -58,7 +58,7 @@ namespace eCommerceApp.Infrastructure.Data
             builder.Entity<Customer>(e =>
             {
                 e.HasKey(x => x.Id);
-                e.Property(x => x.Id).ValueGeneratedNever(); // ← importantísimo
+                e.Property(x => x.Id).ValueGeneratedNever();
                 e.HasOne(x => x.AppUser)
                  .WithOne(u => u.Customer)
                  .HasForeignKey<Customer>(x => x.Id)
@@ -68,35 +68,26 @@ namespace eCommerceApp.Infrastructure.Data
             builder.Entity<Professional>(e =>
             {
                 e.HasKey(x => x.Id);
-                e.Property(x => x.Id).ValueGeneratedNever(); // ← importantísimo
+                e.Property(x => x.Id).ValueGeneratedNever();
                 e.HasOne(x => x.AppUser)
                  .WithOne(u => u.Professional)
                  .HasForeignKey<Professional>(x => x.Id)
                  .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // --- Herencia table-per-type para Customer y Professional ---
             builder.Entity<Customer>().ToTable("Customers");
             builder.Entity<Professional>().ToTable("Professionals");
 
-            // --- Claves compuestas en tablas intermedias ----------------
             builder.Entity<AppUserAddress>()
                 .HasKey(x => new { x.AppUserId, x.AddressId });
 
             builder.Entity<ProfessionalGroup>()
                 .HasKey(x => new { x.GroupId, x.ProfessionalId });
 
-
-            // --- Precisión de decimales y otras configuraciones ----------
-            //builder.Entity<ServiceOffering>()
-            //    .Property(x => x.BasePrice)
-            //    .HasColumnType("decimal(10,2)");
-
             builder.Entity<ServiceDetail>()
                 .Property(x => x.UnitPrice)
                 .HasColumnType("decimal(10,2)");
 
-            // --- Relaciones (ejemplos) ----------------------------------
             builder.Entity<Service>()
                 .HasMany(s => s.Details)
                 .WithOne(d => d.Service)
@@ -109,88 +100,120 @@ namespace eCommerceApp.Infrastructure.Data
 
             builder.Entity<RatingService>(e =>
             {
-                // FK principal: Service -> Ratings (podés dejar CASCADE)
                 e.HasOne(r => r.Service)
                  .WithMany(s => s.Ratings)
                  .HasForeignKey(r => r.ServiceId)
                  .OnDelete(DeleteBehavior.Cascade);
 
-                // Cortar cascada para evitar multiple paths:
                 e.HasOne(r => r.Customer)
-                 .WithMany(c => c.Ratings) // o .WithMany()
+                 .WithMany(c => c.Ratings)
                  .HasForeignKey(r => r.CustomerId)
-                 .OnDelete(DeleteBehavior.Restrict); // o SetNull
+                 .OnDelete(DeleteBehavior.Restrict);
 
                 e.HasOne(r => r.Professional)
-                 .WithMany(p => p.Ratings) // o .WithMany()
+                 .WithMany(p => p.Ratings)
                  .HasForeignKey(r => r.ProfessionalId)
-                 .OnDelete(DeleteBehavior.Restrict); // o SetNull
+                 .OnDelete(DeleteBehavior.Restrict);
             });
+
             builder.Entity<ServiceOffering>(b =>
             {
+                // índices
                 b.HasIndex(o => new { o.ProfessionalId, o.CategoryId });
-                
                 b.HasIndex(o => o.CategoryId);
-                
-                b.Property(x => x.BasePrice)
-                .HasColumnType("decimal(10,2)");
+                // opcional: único por nombre dentro del profesional
+                // b.HasIndex(o => new { o.ProfessionalId, o.Name }).IsUnique();
 
+                b.Property(x => x.BasePrice).HasColumnType("decimal(10,2)");
                 b.Property(o => o.ProfessionalId).IsRequired();
-
                 b.Property(o => o.CategoryId).IsRequired();
 
-
+                // ⚠️ Cambiado a Restrict para evitar cascadas múltiples
                 b.HasOne(o => o.Professional)
                  .WithMany(p => p.ServiceOfferings)
                  .HasForeignKey(o => o.ProfessionalId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.Restrict);
 
                 b.HasOne(o => o.Category)
-                 .WithMany() // o .WithMany(c => c.ServiceOfferings) si agregás colección
+                 .WithMany() // o .WithMany(c => c.ServiceOfferings)
                  .HasForeignKey(o => o.CategoryId)
                  .OnDelete(DeleteBehavior.Restrict);
 
-                // En ServiceOffering: FK compuesta → ProfessionalCategory
-                b.HasOne<ProfessionalCategory>()     // sin navegación
-                .WithMany()
-                .HasForeignKey(o => new { o.CategoryId, o.ProfessionalId })
-                .HasPrincipalKey(pc => new { pc.CategoryId, pc.ProfessionalId })
-                .OnDelete(DeleteBehavior.Restrict);
+                // FK compuesta → ProfessionalCategory (enforcement)
+                b.HasOne<ProfessionalCategory>()
+                 .WithMany()
+                 .HasForeignKey(o => new { o.CategoryId, o.ProfessionalId })
+                 .HasPrincipalKey(pc => new { pc.CategoryId, pc.ProfessionalId })
+                 .OnDelete(DeleteBehavior.Restrict); // o .NoAction
             });
 
             builder.Entity<ProfessionalCategory>()
                 .HasKey(x => new { x.CategoryId, x.ProfessionalId });
 
-            builder.Entity<PaymentMethod>()
-                .HasData(
-                    new PaymentMethod
-                    {
-                        Id = Guid.Parse("f5a43dbc-5c5d-4e77-bdbf-037f8f9dd10d"),
-                        Name = "Credit Card"
-                    }
-                );
-            builder.Entity<IdentityRole>()
-                .HasData(
-                    new IdentityRole
-                    {
-                        Id = "ADMIN",
-                        Name = "Admin",
-                        NormalizedName = "ADMIN"
-                    },
-                    new IdentityRole
-                    {
-                        Id = "PROFESSIONAL",
-                        Name = "Professional",
-                        NormalizedName = "PROFESSIONAL"
-                    },
-                    new IdentityRole
-                    {
-                        Id = "CUSTUMER",
-                        Name = "Custumer",
-                        NormalizedName = "CUSTUMER"
-                    }
-                );
+            builder.Entity<ProfessionalLicense>(b =>
+            {
+                // índices útiles
+                b.HasIndex(x => new { x.ProfessionalId, x.CategoryId, x.Number }).IsUnique(); // evita duplicados
+                b.HasIndex(x => x.CategoryId);
+
+                // FK “normal”: License -> Professional
+                b.HasOne(l => l.Professional)
+                 .WithMany(p => p.Licenses)
+                 .HasForeignKey(l => l.ProfessionalId)
+                 .OnDelete(DeleteBehavior.Restrict); // evita multiple cascade paths
+
+                // FK “normal”: License -> Category
+                b.HasOne(l => l.Category)
+                 .WithMany() // o .WithMany(c => c.ProfessionalLicenses) si agregás la colección
+                 .HasForeignKey(l => l.CategoryId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                // **ENFORCEMENT**: FK compuesta -> ProfessionalCategory
+                b.HasOne<ProfessionalCategory>()
+                 .WithMany()
+                 .HasForeignKey(l => new { l.CategoryId, l.ProfessionalId })
+                 .HasPrincipalKey(pc => new { pc.CategoryId, pc.ProfessionalId })
+                 .OnDelete(DeleteBehavior.Restrict); // o NoAction
+            });
+
+            builder.Entity<ProfessionalCategory>(b =>
+            {
+                // PK compuesta (¡orden importa!)
+                b.HasKey(pc => new { pc.CategoryId, pc.ProfessionalId });
+
+                // Índices útiles
+                b.HasIndex(pc => pc.ProfessionalId);
+                b.HasIndex(pc => pc.CategoryId);
+
+                // FK a Professional (RESTRICT para evitar multiple cascade paths)
+                b.HasOne(pc => pc.Professional)
+                 .WithMany(p => p.ProfessionalCategories)
+                 .HasForeignKey(pc => pc.ProfessionalId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                // FK a Category (RESTRICT también)
+                b.HasOne(pc => pc.Category)
+                 .WithMany(c => c.ProfessionalCategories)
+                 .HasForeignKey(pc => pc.CategoryId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<PaymentMethod>().HasData(
+                new PaymentMethod
+                {
+                    Id = Guid.Parse("f5a43dbc-5c5d-4e77-bdbf-037f8f9dd10d"),
+                    Name = "Credit Card"
+                }
+            );
+
+            // Roles (typos corregidos)
+            builder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Id = "ADMIN", Name = "Admin", NormalizedName = "ADMIN" },
+                new IdentityRole { Id = "PROFESSIONAL", Name = "Professional", NormalizedName = "PROFESSIONAL" },
+                new IdentityRole { Id = "CUSTOMER", Name = "Customer", NormalizedName = "CUSTOMER" }
+            );
         }
+
         public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
         {
             var now = DateTime.Now;

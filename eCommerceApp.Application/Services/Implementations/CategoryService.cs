@@ -2,6 +2,7 @@
 using eCommerceApp.Application.DTOs;
 using eCommerceApp.Application.DTOs.Category;
 using eCommerceApp.Application.DTOs.Product;
+using eCommerceApp.Application.DTOs.ServicioAhora.ServOffering;
 using eCommerceApp.Application.Services.Interfaces;
 using eCommerceApp.Domain.Entities;
 using eCommerceApp.Domain.Interfaces;
@@ -9,11 +10,11 @@ using eCommerceApp.Domain.Interfaces.CategorySpecifics;
 
 namespace eCommerceApp.Application.Services.Implementations
 {
-    public class CategoryService(IGeneric<CategoryOld> categoryInterface, IMapper mapper, ICategory categorySpecifics) : ICategoryService
+    public class CategoryService(IGeneric<Category> categoryInterface, IMapper mapper, ICategory categorySpecifics) : ICategoryService
     {
         public async Task<ServiceResponse> AddAsync(CreateCategory category)
         {
-            var mappedData = mapper.Map<CategoryOld>(category);
+            var mappedData = mapper.Map<Category>(category);
             int result = await categoryInterface.AddAsync(mappedData);
             return result > 0 ? new ServiceResponse(true, "Category created!") : new ServiceResponse(false, "Category failed to be deleted!");
         }
@@ -41,13 +42,30 @@ namespace eCommerceApp.Application.Services.Implementations
             var product = await categorySpecifics.GetProductsByCategory(categoryId);
             if (!product.Any())
                 return [];
-            
+
             return mapper.Map<IEnumerable<GetProduct>>(product);
         }
 
+        public async Task<IEnumerable<GetServiceOffering>> GetServOfferingByCategory(Guid categoryId)
+        {
+            var product = await categorySpecifics.GetServOfferingByCategory(categoryId);
+            if (!product.Any())
+                return [];
+
+            return mapper.Map<IEnumerable<GetServiceOffering>>(product);
+        }
+        //public async Task<IEnumerable<ProfessionalCategory>> GetProfessionalByCategory(Guid categoryId)
+        //{
+        //    var product = await categorySpecifics.GetProfessionalByCategory(categoryId);
+        //    if (!product.Any())
+        //        return [];
+
+        //    return mapper.Map<IEnumerable<ProfessionalCategory>>(product);
+        //}
+
         public async Task<ServiceResponse> UpdateAsync(UpdateCategory category)
         {
-            var mappedData = mapper.Map<CategoryOld>(category);
+            var mappedData = mapper.Map<Category>(category);
             int result = await categoryInterface.UpdateAsync(mappedData);
             return result > 0 ? new ServiceResponse(true, "Category updated!") : new ServiceResponse(false, "Category failed to be update!");
         }

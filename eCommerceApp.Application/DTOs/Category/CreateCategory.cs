@@ -1,6 +1,6 @@
 ﻿namespace eCommerceApp.Application.DTOs.Category
 {
-    public class CreateCategory : BaseCategory
+    public class CreateCategory : BaseProfessionalCategory
     {
     }
 }

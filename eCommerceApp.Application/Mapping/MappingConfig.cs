@@ -4,6 +4,8 @@ using eCommerceApp.Application.DTOs.Category;
 using eCommerceApp.Application.DTOs.Identity;
 using eCommerceApp.Application.DTOs.Identity.Rol.Professional;
 using eCommerceApp.Application.DTOs.Product;
+using eCommerceApp.Application.DTOs.ProfessionalCat;
+using eCommerceApp.Application.DTOs.ProfessionalLicense;
 using eCommerceApp.Application.DTOs.ServicioAhora.ServOffering;
 using eCommerceApp.Domain.Entities;
 using eCommerceApp.Domain.Entities.Cart;
@@ -17,10 +19,13 @@ namespace eCommerceApp.Application.Mapping
     {
         public MappingConfig()
         {
-            CreateMap<CreateCategory, CategoryOld>();
+            CreateMap<CreateCategory, Category>();
             CreateMap<CreateProduct, Product>();
 
-            CreateMap<CategoryOld, GetCategory>();
+            CreateMap<Category, GetCategory>()
+            .ForMember(d => d.ServiceOfferingsCategories,
+                o => o.MapFrom(s => s.ServiceOfferingsCategories));
+
             CreateMap<Product, GetProduct>();
 
            // CreateMap<CreateUser, AppUser>();
@@ -67,6 +72,33 @@ namespace eCommerceApp.Application.Mapping
                 .ForMember(d => d.Category, o => o.Ignore())
                 .ForMember(d => d.ServiceDetails, o => o.Ignore());
 
+            CreateMap<ProfessionalLicense, GetProfessionalLicense>()
+            .ForMember(d => d.CategoryName, o => o.MapFrom(s => s.Category.Name));
+
+            CreateMap<CreateProfessionalLicense, ProfessionalLicense>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.Professional, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore());
+
+            CreateMap<UpdateProfessionalLicense, ProfessionalLicense>()
+                .ForMember(d => d.ProfessionalId, o => o.Ignore()) // no cambiar owner por defecto
+                .ForMember(d => d.Professional, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore());
+
+            CreateMap<ProfessionalCategory, GetProfessionalCategory>()
+                .ForMember(d => d.ProfessionalFullName,
+                    o => o.MapFrom(s => s.Professional.AppUser.FullName))
+                .ForMember(d => d.CategoryName,
+                    o => o.MapFrom(s => s.Category.Name));
+
+            CreateMap<CreateProfessionalCategory, ProfessionalCategory>()
+                .ForMember(d => d.Professional, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore());
+
+            CreateMap<UpdateProfessionalCategory, ProfessionalCategory>()
+                .ForMember(d => d.ProfessionalId, o => o.MapFrom(s => s.ProfessionalId))
+                .ForMember(d => d.Professional, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore());
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerceApp.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using eCommerceApp.Infrastructure.Data;
 namespace eCommerceApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250922225535_cambioCat")]
+    partial class cambioCat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,9 +66,9 @@ namespace eCommerceApp.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = "CUSTOMER",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
+                            Id = "CUSTUMER",
+                            Name = "Custumer",
+                            NormalizedName = "CUSTUMER"
                         });
                 });
 
@@ -452,8 +455,6 @@ namespace eCommerceApp.Infrastructure.Migrations
 
                     b.HasKey("CategoryId", "ProfessionalId");
 
-                    b.HasIndex("CategoryId");
-
                     b.HasIndex("ProfessionalId");
 
                     b.ToTable("ProfessionalCategories");
@@ -480,9 +481,6 @@ namespace eCommerceApp.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
 
@@ -504,12 +502,7 @@ namespace eCommerceApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("CategoryId", "ProfessionalId");
-
-                    b.HasIndex("ProfessionalId", "CategoryId", "Number")
-                        .IsUnique();
+                    b.HasIndex("ProfessionalId");
 
                     b.ToTable("ProfessionalLicenses");
                 });
@@ -799,13 +792,13 @@ namespace eCommerceApp.Infrastructure.Migrations
                     b.HasOne("eCommerceApp.Domain.Entities.Category", "Category")
                         .WithMany("ProfessionalCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("eCommerceApp.Domain.Entities.Rol.Professional", "Professional")
                         .WithMany("ProfessionalCategories")
                         .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -834,25 +827,11 @@ namespace eCommerceApp.Infrastructure.Migrations
 
             modelBuilder.Entity("eCommerceApp.Domain.Entities.ProfessionalLicense", b =>
                 {
-                    b.HasOne("eCommerceApp.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("eCommerceApp.Domain.Entities.Rol.Professional", "Professional")
                         .WithMany("Licenses")
                         .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("eCommerceApp.Domain.Entities.ProfessionalCategory", null)
-                        .WithMany()
-                        .HasForeignKey("CategoryId", "ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Category");
 
                     b.Navigation("Professional");
                 });
@@ -975,7 +954,7 @@ namespace eCommerceApp.Infrastructure.Migrations
                     b.HasOne("eCommerceApp.Domain.Entities.Rol.Professional", "Professional")
                         .WithMany("ServiceOfferings")
                         .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("eCommerceApp.Domain.Entities.ProfessionalCategory", null)

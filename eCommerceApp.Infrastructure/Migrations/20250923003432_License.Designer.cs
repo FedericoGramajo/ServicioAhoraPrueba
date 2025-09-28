@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerceApp.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using eCommerceApp.Infrastructure.Data;
 namespace eCommerceApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250923003432_License")]
+    partial class License
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -452,8 +455,6 @@ namespace eCommerceApp.Infrastructure.Migrations
 
                     b.HasKey("CategoryId", "ProfessionalId");
 
-                    b.HasIndex("CategoryId");
-
                     b.HasIndex("ProfessionalId");
 
                     b.ToTable("ProfessionalCategories");
@@ -799,13 +800,13 @@ namespace eCommerceApp.Infrastructure.Migrations
                     b.HasOne("eCommerceApp.Domain.Entities.Category", "Category")
                         .WithMany("ProfessionalCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("eCommerceApp.Domain.Entities.Rol.Professional", "Professional")
                         .WithMany("ProfessionalCategories")
                         .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");

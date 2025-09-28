@@ -16,6 +16,8 @@ namespace eCommerceApp.Domain.Entities
 
         [Required]
         public string? ProfessionalId { get; set; }
+        [Required]
+        public Guid CategoryId { get; set; }
 
         [Required, MaxLength(100)]
         public string Number { get; set; } = string.Empty;
@@ -28,5 +30,7 @@ namespace eCommerceApp.Domain.Entities
 
         [ForeignKey(nameof(ProfessionalId))]
         public Professional Professional { get; set; } = default!;
+        [ForeignKey(nameof(CategoryId))]
+        public Category Category { get; set; } = default!;
     }
 }
